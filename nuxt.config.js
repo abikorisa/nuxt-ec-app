@@ -19,8 +19,11 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   //ここにfirebaseとveeValidateをいれる
-  plugins: ["~/plugins/firebase.ts"],
-  plugins: [{ src: "~/plugins/swiper.ts", ssr: false }],
+  plugins: [
+    { src: "~/plugins/swiper.ts", ssr: false },
+    { src: "~/plugins/veeValidate" },
+    { src: "~/plugins/firebase.ts" }
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -43,7 +46,20 @@ export default {
       pathPrefix: false
     }
   ],
-
+  vuex: false,
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {
+    extend(config, { isDev, isClient, isServer }) {
+      if (isServer) {
+        config.externals = {
+          "@firebase/app": "commonjs @firebase/app",
+          "@firebase/firestore": "commonjs @firebase/firestore",
+          "@firebase/storage": "commonjs @firebase/storage",
+          "@firebase/auth": "commonjs @firebase/auth"
+          //etc...
+        };
+      }
+    },
+    transpile: ["vee-validate"]
+  }
 };

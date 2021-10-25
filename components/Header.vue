@@ -17,6 +17,10 @@
         :class="{ flex: open }"
         class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:justify-end md:flex-row"
       >
+        <p v-if="getLoginUser">{{ getLoginUser }}さん</p>
+        <p v-else>
+          ゲストさん
+        </p>
         <router-link
           to="/cart"
           class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
@@ -30,11 +34,18 @@
           履歴
         </router-link>
         <router-link
+          v-if="!getLoginUser"
           to="/login"
           class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
         >
           ログイン
         </router-link>
+        <span
+          v-else
+          class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+          @click="userLogout"
+          >ログアウト</span
+        >
       </nav>
     </div>
   </div>
@@ -42,12 +53,23 @@
 
 <script lang="ts">
 import Vue from "vue";
-
+import { UserStore } from "../store/index";
 export default Vue.extend({
   data() {
     return {
       open: true
     };
+  },
+  methods: {
+    userLogout(): void {
+      UserStore.logout();
+      this.$router.push("/");
+    }
+  },
+  computed: {
+    getLoginUser(): string | null | undefined {
+      return UserStore.uid;
+    }
   }
 });
 </script>

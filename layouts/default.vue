@@ -11,6 +11,20 @@
   </div>
 </template>
 
+<script lang="ts">
+import Vue from "vue";
+import { ItemsStore } from "../store";
+
+export default Vue.extend({
+  async fetch(): Promise<void> {
+    if (ItemsStore.items.length === 0) {
+      await ItemsStore.fetchItemList();
+    }
+    console.log(ItemsStore.items);
+  }
+});
+</script>
+
 <style lang="scss">
 .wrapper {
   width: 80%;
