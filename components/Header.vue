@@ -17,7 +17,7 @@
         :class="{ flex: open }"
         class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:justify-end md:flex-row"
       >
-        <p v-if="getLoginUser">{{ getLoginUser }}さん</p>
+        <p v-if="getLoginUser">{{ getLoginUser.name }}さん</p>
         <p v-else>
           ゲストさん
         </p>
@@ -54,6 +54,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { UserStore } from "../store/index";
+import { userInfoType } from "../types/userInfoTypes";
+
 export default Vue.extend({
   data() {
     return {
@@ -67,8 +69,11 @@ export default Vue.extend({
     }
   },
   computed: {
-    getLoginUser(): string | null | undefined {
+    getUserUid(): string | null | undefined {
       return UserStore.uid;
+    },
+    getLoginUser(): userInfoType | null {
+      return UserStore.userInfo;
     }
   }
 });

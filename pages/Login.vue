@@ -12,36 +12,53 @@
             商品のご購入、マイページのご利用にはログインが必要です。
           </p>
         </div>
+        <p
+          class="text-center p-3 text-sm text-red-700"
+          v-if="loginErrorMessage"
+        >
+          入力内容に不備があります
+        </p>
         <ValidationObserver v-slot="{ invalid }">
-          <div class=" text-center p-3">
-            <label class="text-sm mb-1 align-top inline-block w-40"
-              >メールアドレス</label
-            >
+          <div class="text-center p-3">
+            <p class="text-sm mb-1 align-top inline-block w-40">
+              メールアドレス
+            </p>
             <ValidationProvider
               v-slot="{ errors }"
               name="メールアドレス"
               rules="required|email"
             >
-              <input
-                class="h-10 rounded-md w-48 bg-gray-100 w-64 h-10 p-1.5"
-                v-model="userInfo.email"
-                name="メールアドレス"
-                type="text"
-              />
-              <p class="text-xs text-red-700">
-                {{ errors[0] }}
-              </p>
+              <div>
+                <input
+                  class="h-10 rounded-md w-48 bg-gray-100 w-64 h-10 p-1.5"
+                  v-model="userInfo.email"
+                  name="メールアドレス"
+                  type="text"
+                />
+                <p class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </p>
+              </div>
             </ValidationProvider>
           </div>
-          <div class=" text-center p-3">
-            <label class="text-sm mb-1 align-top inline-block w-40"
-              >パスワード</label
+          <div class="text-center p-3">
+            <p class="text-sm mb-1 align-top inline-block w-40">パスワード</p>
+            <ValidationProvider
+              v-slot="{ errors }"
+              name="パスワード"
+              rules="required"
             >
-            <input
-              class="h-10 rounded-md w-48 bg-gray-100 w-64 h-10 p-1.5"
-              v-model="userInfo.password"
-              type="password"
-            />
+              <div>
+                <input
+                  class="h-10 rounded-md w-48 bg-gray-100 w-64 h-10 p-1.5"
+                  v-model="userInfo.password"
+                  type="password"
+                />
+                <p class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </p>
+              </div>
+            </ValidationProvider>
           </div>
           <div class="text-center p-3">
             <button
@@ -63,11 +80,12 @@
 import Vue from "vue";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import { userLoginType } from "../types/userInfoTypes";
-import { auth } from "../plugins/firebase";
+import { auth, db } from "../plugins/firebase";
 import { UserStore } from "../store/index";
 
 type DataType = {
   userInfo: userLoginType;
+  loginErrorMessage: boolean;
 };
 
 export default Vue.extend({
@@ -80,7 +98,8 @@ export default Vue.extend({
       userInfo: {
         email: "",
         password: ""
-      }
+      },
+      loginErrorMessage: false
     };
   },
   methods: {
@@ -88,10 +107,17 @@ export default Vue.extend({
       auth
         .signInWithEmailAndPassword(this.userInfo.email, this.userInfo.password)
         .then((userCredential: any) => {
-          let user = userCredential.user;
-          UserStore.login(user);
+          let userInfo = userCredential.user;
+          this.loginErrorMessage = false;
+          UserStore.login(userInfo);
         })
-        .then(() => this.$router.push("/"));
+        .then(() => {
+          console.log(UserStore.userInfo);
+          this.$router.push("/");
+        })
+        .catch(() => {
+          this.loginErrorMessage = true;
+        });
     }
   }
 });

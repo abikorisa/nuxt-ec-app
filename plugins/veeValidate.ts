@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate'
 import {
-  required, max, email, alpha_dash, confirmed, oneOf
+  required, max, min, email, alpha_dash, confirmed, oneOf
 } from 'vee-validate/dist/rules';
 
 extend('required', {
@@ -13,6 +13,12 @@ extend('max', {
   ...max,
   params: ['length'],
   message: '{length}文字以下で入力してください'
+});
+
+extend('min', {
+  ...min,
+  params: ['length'],
+  message: '{length}文字以上で入力してください'
 });
 
 extend('email', {
@@ -35,7 +41,7 @@ extend('oneOf', {
   message: 'どちらかを選択してください'
 })
 
-extend('yubin', {
+extend('zipcode', {
   validate(value: string) {
     return value.length === 7
   },

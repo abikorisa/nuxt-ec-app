@@ -1,22 +1,32 @@
 <template>
   <div class="wrapper">
     <div class="flex flex-wrap justify-center">
-      <ul v-for="item in items" :key="item.index">
+      <ul v-for="item in itemsFromStore" :key="item.index">
         <router-link
           :to="{
-            name: 'ItemDetail-id'
+            name: 'ItemDetail-id',
+            params: {
+              item: item,
+              id: item.id
+            }
           }"
         >
           <li class="m-3">
             <table>
               <thead>
-                <td><img class="w-72" src="../assets/1/00.jpeg" /></td>
+                <tr>
+                  <td><img class="w-60" :src="item.img1" /></td>
+                </tr>
               </thead>
               <tbody>
-                <td class="text-sm text-center">{{ item.name }}</td>
-              </tbody>
-              <tbody>
-                <td class="text-sm text-center">{{ item.price }}</td>
+                <tr>
+                  <td class="text-sm text-center">{{ item.itemName }}</td>
+                </tr>
+                <tr>
+                  <td class="text-sm text-center">
+                    {{ item.itemPrice.toLocaleString("ja-JP") }}円
+                  </td>
+                </tr>
               </tbody>
             </table>
           </li>
@@ -28,19 +38,19 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { db } from "../plugins/firebase";
+import { itemType } from "../types/itemInfoTypes";
+import { ItemsStore } from "../store";
+import { UserStore } from "../store/index";
 
 export default Vue.extend({
   data() {
-    return {
-      items: [
-        { name: "ワンピース", price: 1900 },
-        { name: "帽子", price: 1900 },
-        { name: "帽子", price: 1900 },
-        { name: "帽子", price: 1900 },
-        { name: "帽子", price: 1900 },
-        { name: "帽子", price: 1900 }
-      ]
-    };
+    return {};
+  },
+  computed: {
+    itemsFromStore(): itemType[] {
+      return ItemsStore.items;
+    }
   }
 });
 </script>

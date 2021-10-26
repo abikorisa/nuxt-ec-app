@@ -20,6 +20,7 @@ export default Vue.extend({
     if (ItemsStore.items.length === 0) {
       await ItemsStore.fetchItemList();
     }
+    console.log("async fetchが動きました");
     console.log(ItemsStore.items);
   }
 });

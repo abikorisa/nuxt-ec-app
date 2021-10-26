@@ -5,15 +5,14 @@ import { userInfoType, userDataType } from '../types/userInfoTypes'
 @Module({ name: 'auth', namespaced: true, stateFactory: true })
 export default class UserStore extends VuexModule {
 
-  /* ___ここからstateの記述___ */
-  public login_user: userDataType | null = null
+  /* ___ここからstateの記述_______________________ */
   public userInfo: userInfoType | null = null
   public uid: string | null | undefined = null
 
 
 
 
-  /* ___ここからgettersの記述___ */
+  /* ___ここからgettersの記述_______________________ */
 
   //uidを取得する
   public get getUid(): string | null | undefined {
@@ -27,16 +26,18 @@ export default class UserStore extends VuexModule {
 
   //ユーザー情報を保持する
   @Mutation
-  private setUserInfo(user: userDataType): void {
+  private setUserInfo(user: userInfoType): void {
     this.uid = user.uid
-    this.login_user = user
+    this.userInfo = user
   }
+
+
 
   //ユーザー情報を削除する
   @Mutation
-  private clearUserInfo(userInfo: null): void {
+  private clearUserInfo(): void {
     this.uid = null
-    this.login_user = null
+    this.userInfo = null
   }
 
 
@@ -45,18 +46,36 @@ export default class UserStore extends VuexModule {
 
   //ログイン
   @Action({ rawError: true })
-  public async login(userInfo: userInfoType): Promise<void> {
-    const user = {
-      name: userInfo.name,
-      uid: userInfo.uid
-    }
+  public async register(userInfo: userInfoType): Promise<void> {
+    const user: userInfoType = userInfo
     this.setUserInfo(user)
+  }
+
+  @Action({ rawError: true })
+  public async login(userInfo: userInfoType): Promise<void> {
+    let uid = userInfo.uid
+    db.collection(`users/${uid}/userInfo`)
+      .get().then((snapShot) => {
+        snapShot.forEach((doc) => {
+          let user: userInfoType = doc.data()
+          this.setUserInfo(user)
+        })
+      })
+  }
+
+
+  //会員情報をDBに追加する処理
+  @Action({ rawError: true })
+  public async addUserInfo(userInfo: userInfoType) {
+    db.collection(`users/${userInfo.uid}/userInfo`).add(userInfo).then(() => {
+      console.log('Actionsが稼働')
+    })
   }
 
   //ログアウト
   @Action({ rawError: true })
   public async logout(): Promise<void> {
     await auth.signOut();
-    this.clearUserInfo(null);
+    this.clearUserInfo();
   }
 }

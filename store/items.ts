@@ -12,6 +12,10 @@ export default class ItemsStore extends VuexModule {
 
   /* ___ここからgettersの記述_______________________ */
 
+  //storeから商品データの取得
+  public get getItemList() {
+    return this.items
+  }
 
 
   /* ___ここからmutationsの記述_______________________ */
@@ -23,7 +27,7 @@ export default class ItemsStore extends VuexModule {
 
   /* ____ここからactionsの記述________________________ */
 
-  //商品情報の取得
+  //DBから商品情報の取得
   @Action({ rawError: true })
   public async fetchItemList(): Promise<void> {
     await db.collection(`admin/PjZocn2dcSWktDeHgmaO/itemList`)
