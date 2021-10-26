@@ -62,7 +62,7 @@
           </div>
           <div class="text-center p-3">
             <button
-              class="bg-gray-300 py-2 px-10 bg-yellow-500 rounded-md text-white"
+              class="py-2 px-10 bg-yellow-500 rounded-md text-white"
               :disabled="invalid"
               @click="userLogin"
             >
@@ -111,10 +111,7 @@ export default Vue.extend({
           this.loginErrorMessage = false;
           UserStore.login(userInfo);
         })
-        .then(() => {
-          console.log(UserStore.userInfo);
-          this.$router.push("/");
-        })
+        .then(() => this.$router.push("/"))
         .catch(() => {
           this.loginErrorMessage = true;
         });

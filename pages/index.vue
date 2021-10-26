@@ -47,6 +47,9 @@ export default Vue.extend({
   data() {
     return {};
   },
+  created() {
+    console.log(UserStore.userInfo);
+  },
   computed: {
     itemsFromStore(): itemType[] {
       return ItemsStore.items;
