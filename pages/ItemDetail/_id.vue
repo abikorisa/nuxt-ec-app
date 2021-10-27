@@ -64,6 +64,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { itemType } from "../../types/itemInfoTypes";
+import { CartStore } from "../../store";
 
 type DataType = {
   url: string | undefined;
@@ -85,7 +86,6 @@ export default Vue.extend({
       this.url = this.item.img1;
       sessionStorage.setItem("catch-params", JSON.stringify(this.item));
     } else {
-      console.log("パラムス復活");
       let storageItem = JSON.parse(
         sessionStorage.getItem("catch-params") as string
       );
@@ -98,7 +98,7 @@ export default Vue.extend({
   methods: {
     addItemToCart(): void {
       this.item.itemNum = this.number;
-      console.log(this.item);
+      CartStore.addItemToCart(this.item);
     },
     incrementItemNum(): void {
       this.number++;

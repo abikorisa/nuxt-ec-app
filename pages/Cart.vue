@@ -19,29 +19,41 @@
       >
         ショッピングを続ける
       </button>
-      <button class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white">
+      <button
+        class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white"
+        @click="changeCartIntoForm"
+      >
         注文に進む
       </button>
     </div>
+    <OrderForm v-if="showOrderForm" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import OrderHistory from "./OrderHistory.vue";
 
 type DataType = {
   showCartPage: boolean;
+  showOrderForm: boolean;
 };
 
 export default Vue.extend({
+  components: { OrderHistory },
   data() {
     return {
-      showCartPage: true
+      showCartPage: true,
+      showOrderForm: false
     };
   },
   methods: {
     backToHome() {
       this.$router.push("/");
+    },
+    changeCartIntoForm(): void {
+      this.showCartPage = false;
+      this.showOrderForm = true;
     }
   }
 });
