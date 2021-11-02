@@ -5,14 +5,28 @@
     </div>
     <div v-else class="text-center"><h2>注文内容</h2></div>
     <div class="bg-white m-3 mx-auto rounded-md w-96 md:w-3/5 sm:w-4/5">
-      <div class="py-2.5 flex px-12 justify-center">
-        <img class="w-32" src="../assets/1/01.jpeg" />
-        <div class="w-96">
-          <p>ワンピース</p>
-        </div>
-      </div>
+      <ul v-for="item in fetchCartItems.itemInfo" :key="item.index">
+        <li>
+          <div class="py-2.5 flex px-12 justify-center">
+            <img class="w-32" :src="item.img1" />
+            <div class="w-96">
+              <p>{{ item.itemName }}</p>
+              <p>{{ item.itemPrice.toLocaleString("ja-JP") }}円</p>
+              <p>{{ item.itemNum }}個</p>
+              <p>
+                {{
+                  (
+                    item.itemPrice * tax +
+                    item.itemPrice * item.itemNum
+                  ).toLocaleString("ja-JP")
+                }}円
+              </p>
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
-    <div class="flex justify-center">
+    <div v-if="!showOrderForm" class="flex justify-center">
       <button
         class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white"
         @click="backToHome"
@@ -32,20 +46,26 @@
 
 <script lang="ts">
 import Vue from "vue";
-import OrderHistory from "./OrderHistory.vue";
+import { CartStore } from "../store";
 
 type DataType = {
   showCartPage: boolean;
   showOrderForm: boolean;
+  tax: number;
 };
 
 export default Vue.extend({
-  components: { OrderHistory },
-  data() {
+  data(): DataType {
     return {
       showCartPage: true,
-      showOrderForm: false
+      showOrderForm: false,
+      tax: 0.1
     };
+  },
+  computed: {
+    fetchCartItems() {
+      return CartStore.cartItems;
+    }
   },
   methods: {
     backToHome() {

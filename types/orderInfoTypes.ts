@@ -8,16 +8,23 @@ export interface cartItemsType {
   img2?: string;
   img3?: string;
   itemNum?: number;
-  orderId?: string;
+  itemText?: string;
+  /* orderId?: string;
   status?: 0,
-  totalPrice?: number;
+  totalPrice?: number; */
 }
 
 
 export interface orderItemType {
-  orderId?: string | null | undefined,
+  /* orderId?: string | null | undefined,
   itemInfo: cartItemsType[],
   status?: number,
+  userId?: string | null | undefined, */
+
+  orderId: string | null | undefined;
+  itemInfo?: cartItemsType[] | undefined;
+  status?: number
+  userId?: string | null | undefined;
 }
 
 export interface orderInfoType {
