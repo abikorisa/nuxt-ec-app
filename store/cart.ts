@@ -24,18 +24,39 @@ export default class CartStore extends VuexModule {
   /* ___ここからmutationsの記述_______________________ */
   @Mutation
   private setItemtoCart(orderInfo: orderItemType): void {
-    console.log(orderInfo)
     this.orderId = orderInfo.orderId
     this.cartItems = orderInfo
-    console.log(orderInfo)
+    console.log(orderInfo.orderId)
+    console.log(this.cartItems)
+  }
+
+  @Mutation
+  private fetchCartItemsMut(itemInfoFromDB: orderItemType): void {
+    this.cartItems = itemInfoFromDB
     console.log(this.cartItems)
   }
 
   @Mutation
   private updateOrderList(order: orderInfoType): void {
     //ここがpushじゃないと最新の物しか保持できない
+    console.log(order)
     this.orderList.push(order)
+    this.cartItems = null
+    this.orderId = ''
     console.log(this.orderList)
+  }
+
+  @Mutation
+  private fetchOrderdItemsMut(orderedItems: orderItemType[]): void {
+    this.orderList = orderedItems
+    //下記が空になっている
+    console.log(this.orderList)
+  }
+
+  @Mutation
+  private clearOrderInfoMut(): void {
+    this.cartItems = null
+    this.orderList = []
   }
 
 
@@ -68,7 +89,6 @@ export default class CartStore extends VuexModule {
         }
       } else {
         console.log('新たにorderを作成します')
-        console.log(this.orderId)
         db.collection(`users/${UserStore.uid}/orders`)
           .add(order)
           .then((doc) => {
@@ -79,15 +99,53 @@ export default class CartStore extends VuexModule {
     }
   }
   @Action({ rawError: true })
-  public updateOrder(order: orderInfoType) {
+  //updateしたらカートを空にしないといけない
+  public orderConfirm(order: orderInfoType) {
     if (this.orderId) {
       db.collection(`users/${UserStore.uid}/orders`)
         .doc(this.orderId)
         .update(order)
         .then(() => {
-          console.log(order)
           this.updateOrderList(order)
         })
     }
+  }
+
+  @Action({ rawError: true })
+  //DBからカート情報を取得する
+  public async fetchCartItemsAct(): Promise<void> {
+    await db.collection(`users/${UserStore.uid}/orders`)
+      .get()
+      .then((itemInfoAll) => {
+        itemInfoAll.forEach(itemInfo => {
+          let itemInfoFromDB: orderItemType = itemInfo.data()
+          if (itemInfoFromDB.status === 0) {
+            itemInfoFromDB = { ...itemInfoFromDB, orderId: itemInfo.id }
+            this.fetchCartItemsMut(itemInfoFromDB)
+          }
+        })
+      })
+  }
+
+  @Action({ rawError: true })
+  public async fetchOrderdItemsAct(): Promise<void> {
+    await db.collection(`users/${UserStore.uid}/orders`)
+      .get()
+      .then((itemInfoAll) => {
+        let orderedItems: orderItemType[] = []
+        if (itemInfoAll.docs.length > this.orderList.length) {
+          itemInfoAll.forEach(itemInfo => {
+            if (itemInfo.data().status === 1) {
+              orderedItems.push(itemInfo.data())
+            }
+          })
+        }
+        this.fetchOrderdItemsMut(orderedItems)
+      })
+  }
+
+  @Action({ rawError: true })
+  public clearOrderInfoAct(): void {
+    this.clearOrderInfoMut()
   }
 }

@@ -4,7 +4,13 @@
       <h2>カートに入ってる商品</h2>
     </div>
     <div v-else class="text-center"><h2>注文内容</h2></div>
-    <div class="bg-white m-3 mx-auto rounded-md w-96 md:w-3/5 sm:w-4/5">
+    <div
+      v-if="!fetchCartItems"
+      class="bg-white m-3 mx-auto rounded-md w-96 md:w-3/5 sm:w-4/5"
+    >
+      <p class="p-10 text-center">現在カートに商品はありません</p>
+    </div>
+    <div v-else class="bg-white m-3 mx-auto rounded-md w-96 md:w-3/5 sm:w-4/5">
       <ul v-for="item in fetchCartItems.itemInfo" :key="item.index">
         <li>
           <div class="py-2.5 flex px-12 justify-center">
@@ -26,7 +32,7 @@
         </li>
       </ul>
     </div>
-    <div v-if="!showOrderForm" class="flex justify-center">
+    <div v-if="!showOrderForm && fetchCartItems" class="flex justify-center">
       <button
         class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white"
         @click="backToHome"
@@ -47,6 +53,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { CartStore } from "../store";
+import { UserStore } from "../store";
 
 type DataType = {
   showCartPage: boolean;
@@ -61,6 +68,12 @@ export default Vue.extend({
       showOrderForm: false,
       tax: 0.1
     };
+  },
+  async fetch() {
+    if (UserStore.userInfo) {
+      const fetchItemInfo = CartStore.fetchCartItemsAct();
+      await Promise.all([fetchItemInfo]);
+    }
   },
   computed: {
     fetchCartItems() {

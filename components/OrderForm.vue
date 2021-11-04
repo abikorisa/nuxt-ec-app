@@ -235,7 +235,9 @@ export default Vue.extend({
       order.address = this.address;
       order.tel = this.tel;
       order.status = 1;
-      CartStore.updateOrder(order);
+      console.log(CartStore.orderId);
+      CartStore.orderConfirm(order);
+      this.$router.push("/OrderComp");
     }
   }
 });

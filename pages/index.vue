@@ -38,7 +38,6 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { db } from "../plugins/firebase";
 import { itemType } from "../types/itemInfoTypes";
 import { ItemsStore } from "../store";
 import { UserStore } from "../store/index";

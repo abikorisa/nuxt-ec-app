@@ -54,6 +54,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { UserStore } from "../store/index";
+import { CartStore } from "../store/index";
 import { userInfoType } from "../types/userInfoTypes";
 
 export default Vue.extend({
@@ -65,6 +66,7 @@ export default Vue.extend({
   methods: {
     userLogout(): void {
       UserStore.logout();
+      CartStore.clearOrderInfoAct();
       this.$router.push("/");
     }
   },

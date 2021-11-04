@@ -1,4 +1,5 @@
 import { userInfoType } from "./userInfoTypes"
+import { itemType } from "./itemInfoTypes"
 
 export interface cartItemsType {
   id?: number | string;
@@ -9,37 +10,40 @@ export interface cartItemsType {
   img3?: string;
   itemNum?: number;
   itemText?: string;
-  /* orderId?: string;
   status?: 0,
+  orderId?: string;
+  /* orderId?: string;
   totalPrice?: number; */
 }
 
+//注文確定時のデータ型
+export interface orderComfirm {
+
+}
 
 export interface orderItemType {
-  /* orderId?: string | null | undefined,
-  itemInfo: cartItemsType[],
-  status?: number,
-  userId?: string | null | undefined, */
-
-  orderId: string | null | undefined;
+  orderId?: string | null | undefined;
   itemInfo?: cartItemsType[] | undefined;
   status?: number
   userId?: string | null | undefined;
 }
 
 export interface orderInfoType {
-  userInfo?: userInfoType | null
+  //userInfo?: userInfoType | null
   name?: string,
   email?: string,
-  postalcode?: string,
+  zipcode?: string,
   address?: string,
+  itemInfo?: itemType[] | null,
   tel?: string,
-  deliveryDate: string,
-  deliveryTime: string,
-  payment: number,
-  creditCardNum: string,
-  selectPayment: boolean
-
+  deliveryDate?: string,
+  deliveryTime?: string,
+  payment?: number,
+  creditCardNum?: string,
+  selectPayment?: boolean
+  status: number
+  orderId: string | null | undefined;
+  userId?: string | null | undefined;
 }
 
 export interface orderedItemType {

@@ -30,7 +30,7 @@
               <span class="m-auto text-2xl font-thin">−</span>
             </button>
             <span
-              class="outline-none focus:outline-none text-center w-full bg-gray-200 font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none"
+              class="outline-none justify-center w-full bg-gray-200 font-semibold text-md md:text-basecursor-default flex items-center text-gray-700  outline-none"
               >{{ number }}</span
             >
             <button
@@ -51,10 +51,10 @@
           >
         </p>
         <button
-          class="py-2 px-10 bg-yellow-500 rounded-md text-white"
+          class="py-2 px-14 bg-yellow-500 rounded-md text-white"
           @click="addItemToCart"
         >
-          カートに追加する
+          カートに追加
         </button>
       </div>
     </div>
