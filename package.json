@@ -14,7 +14,9 @@
     "firebase": "^8.10.0",
     "nuxt": "^2.15.7",
     "swiper": "^7.0.9",
+    "tailwindcss": "^2.2.19",
     "vee-validate": "^3.4.13",
+    "vue-awesome": "^4.3.1",
     "vue-awesome-swiper": "^4.1.1"
   },
   "devDependencies": {

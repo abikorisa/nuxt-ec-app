@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
-import { cartItemsType, orderItemType, orderInfoType } from "../types/orderInfoTypes";
+import { orderItemType, orderInfoType } from "../types/orderInfoTypes";
 import { db } from "../plugins/firebase";
 import { itemType } from '../types/itemInfoTypes'
 import { UserStore } from '../store';
@@ -33,6 +33,7 @@ export default class CartStore extends VuexModule {
   @Mutation
   private fetchCartItemsMut(itemInfoFromDB: orderItemType): void {
     this.cartItems = itemInfoFromDB
+    this.orderId = itemInfoFromDB.orderId
     console.log(this.cartItems)
   }
 
@@ -59,9 +60,16 @@ export default class CartStore extends VuexModule {
     this.orderList = []
   }
 
+  @Mutation
+  private deleteItemFromCartMut(index: number) {
+    let cartItems = this.cartItems.itenInfo
+    cartItems.splice(index, 1)
+    console.log(cartItems)
+  }
 
   /* ____ここからactionsの記述________________________ */
   @Action({ rawError: true })
+  //カートに商品を追加する
   public addItemToCart(item: itemType): void {
     item.id = new Date().getTime().toString(16) +
       Math.floor(1000 * Math.random()).toString(16)
@@ -72,6 +80,7 @@ export default class CartStore extends VuexModule {
       status: 0
     }
     if (userId) {
+      //ログイン状態である場合
       if (this.orderId) {
         console.log('既存のorderに追加します')
         console.log(this.orderId)
@@ -96,11 +105,34 @@ export default class CartStore extends VuexModule {
             this.setItemtoCart(orderInfo)
           })
       }
+    } else {
+      //ログアウト状態である場合
+      //このままthis.setItemtoCart(orderInfo)でいいのだけど、
+      //userIdが空だからエラーになる可能性
     }
   }
+
   @Action({ rawError: true })
-  //updateしたらカートを空にしないといけない
-  public orderConfirm(order: orderInfoType) {
+  public deleteItemFromCartAct(id: string): void {
+    if (this.orderId) {
+      let cartItems = this.cartItems.itemInfo
+      const deleteItem = cartItems.find((item: itemType) => item.id === id)
+      const deleteItemIndex = cartItems.indexOf(deleteItem)
+      cartItems.splice(deleteItemIndex, 1)
+      db.collection(`users/${UserStore.uid}/orders`)
+        .doc(this.orderId)
+        .update({
+          itemInfo: [...cartItems]
+        })
+        .then(() => {
+          this.deleteItemFromCartMut(deleteItemIndex)
+        })
+    }
+  }
+
+  @Action({ rawError: true })
+  //注文手続きを確定させる
+  public orderConfirm(order: orderInfoType): void {
     if (this.orderId) {
       db.collection(`users/${UserStore.uid}/orders`)
         .doc(this.orderId)
@@ -128,6 +160,7 @@ export default class CartStore extends VuexModule {
   }
 
   @Action({ rawError: true })
+  //DBから注文履歴を取得する
   public async fetchOrderdItemsAct(): Promise<void> {
     await db.collection(`users/${UserStore.uid}/orders`)
       .get()
@@ -135,7 +168,7 @@ export default class CartStore extends VuexModule {
         let orderedItems: orderItemType[] = []
         if (itemInfoAll.docs.length > this.orderList.length) {
           itemInfoAll.forEach(itemInfo => {
-            if (itemInfo.data().status === 1) {
+            if (itemInfo.data().status !== 0) {
               orderedItems.push(itemInfo.data())
             }
           })
@@ -145,6 +178,7 @@ export default class CartStore extends VuexModule {
   }
 
   @Action({ rawError: true })
+  //ログアウト時にstore情報をリセットする
   public clearOrderInfoAct(): void {
     this.clearOrderInfoMut()
   }
