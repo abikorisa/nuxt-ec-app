@@ -6,7 +6,7 @@
     >
       <p class="text-md mb-2.5">{{ fetchUserInfo.name }} 様</p>
       <p class="text-md mb-1.5">
-        この度はご購入いただきありがとうございました。</p>
+        この度はご購入いただきありがとうございました。
       </p>
       <p class="text-md">
         ご購入いただいた商品は、<br />
