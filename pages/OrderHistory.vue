@@ -7,7 +7,7 @@
       v-if="fetchOrderItems.length === 0"
       class="bg-white m-3 mx-auto rounded-md w-96 md:w-3/5 sm:w-4/5"
     >
-      <p class="p-10 text-center">現在カートに商品はありません</p>
+      <p class="p-10 text-center">注文履歴はありません</p>
     </div>
     <div
       v-else
@@ -19,13 +19,13 @@
         <div class="bg-gray-200 p-2 flex justify-between items-center">
           <div>
             <p class="text-xs">注文日：{{ item.orderDate }}</p>
-            <p class="text-xs">配送日：{{ item.deliveryDate }}</p>
-            <p class="text-xs">合計金額：円</p>
+            <p class="text-xs">合計金額：{{ item.totalPrice }}円(税込)</p>
           </div>
           <div>
             <button
               v-if="item.status === 1"
               class="text-xs bg-gray-300 py-1.5 px-2 rounded-md"
+              @click="cancelOrder(item.orderId)"
             >
               注文キャンセル
             </button>
@@ -76,6 +76,13 @@ export default Vue.extend({
   computed: {
     fetchOrderItems() {
       return CartStore.orderList;
+    }
+  },
+  methods: {
+    cancelOrder(orderId: string) {
+      if (window.confirm(`${orderId}削除してもよろしいですか？`)) {
+        CartStore.cancelOrderItemsAct(orderId);
+      }
     }
   }
 });

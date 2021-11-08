@@ -25,7 +25,7 @@
                 <button
                   v-if="!showOrderForm"
                   class="bg-gray-200 text-sm py-1 px-4 rounded-md"
-                  @click="deleteConfirm(item.id)"
+                  @click="deleteConfirm(item.id, item.itemName)"
                 >
                   削除
                 </button>
@@ -38,7 +38,7 @@
         class="py-2 bg-gray-200 m-3 mx-auto rounded-md text-center w-11/12 sm:w-96 md:w-3/5"
       >
         <p class="text-lg">
-          小計：{{
+          合計金額：{{
             Math.floor(priceSum + priceSum * tax).toLocaleString("ja-JP")
           }}円
         </p>
@@ -51,13 +51,13 @@
     </div>
     <div v-if="!showOrderForm && fetchCartItems" class="flex justify-center">
       <button
-        class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white"
+        class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white text-sm sm:text-md"
         @click="backToHome"
       >
         ショッピングを続ける
       </button>
       <button
-        class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white"
+        class="py-2 mx-2 px-10 bg-yellow-500 rounded-md text-white text-sm sm:text-md"
         @click="changeCartIntoForm"
       >
         注文に進む
@@ -113,21 +113,18 @@ export default Vue.extend({
       this.showCartPage = false;
       this.showOrderForm = true;
     },
-    deleteConfirm(id: string) {
-      let cartItems = CartStore.cartItems.itemInfo;
-      console.log(cartItems);
-      const deleteItem = cartItems.find((item: any) => item.id === id);
-      console.log(deleteItem);
-      const deleteItemIndex = cartItems.indexOf(deleteItem);
-      console.log(deleteItemIndex);
-      cartItems.splice(deleteItemIndex, 1);
-      console.log(cartItems);
+    deleteConfirm(id: string, name: string) {
+      if (window.confirm(`${name}を削除してもよろしいですか？`)) {
+        CartStore.deleteItemFromCartAct(id);
+      }
 
-      /* let a = CartStore.cartItems;
-      console.log(a.itemInfo);
-      let b = JSON.stringify(a.itemInfo);
-      b = JSON.parse(b);
-      console.log(b); */
+      /*  //storeのcartitemsの中からidが一致するものを探す
+      let cartItems = CartStore.cartItems.itemInfo;
+      const deleteItem = cartItems.find((item: any) => item.id === id);
+      //該当するidのindexを探し、spliceで削除する
+      const deleteItemIndex = cartItems.indexOf(deleteItem);
+      cartItems.splice(deleteItemIndex, 1);
+      console.log(cartItems); */
     }
   }
 });

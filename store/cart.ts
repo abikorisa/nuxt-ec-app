@@ -2,7 +2,7 @@ import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
 import { orderItemType, orderInfoType } from "../types/orderInfoTypes";
 import { db } from "../plugins/firebase";
 import { itemType } from '../types/itemInfoTypes'
-import { UserStore } from '../store';
+import { strict, UserStore } from '../store';
 
 @Module({ name: 'cart', namespaced: true, stateFactory: true })
 export default class CartStore extends VuexModule {
@@ -61,10 +61,17 @@ export default class CartStore extends VuexModule {
   }
 
   @Mutation
-  private deleteItemFromCartMut(index: number) {
-    let cartItems = this.cartItems.itenInfo
-    cartItems.splice(index, 1)
-    console.log(cartItems)
+  private deleteItemFromCartMut(cartItems: itemType) {
+    this.cartItems.itemInfo = cartItems
+  }
+
+  @Mutation
+  private cancelOrderItemsMut(orderId: string) {
+    this.orderList.forEach((item: orderInfoType) => {
+      if (item.orderId === orderId) {
+        item.status = 2
+      }
+    })
   }
 
   /* ____ここからactionsの記述________________________ */
@@ -116,7 +123,7 @@ export default class CartStore extends VuexModule {
   public deleteItemFromCartAct(id: string): void {
     if (this.orderId) {
       let cartItems = this.cartItems.itemInfo
-      const deleteItem = cartItems.find((item: itemType) => item.id === id)
+      const deleteItem = cartItems.find((item: any) => item.id === id)
       const deleteItemIndex = cartItems.indexOf(deleteItem)
       cartItems.splice(deleteItemIndex, 1)
       db.collection(`users/${UserStore.uid}/orders`)
@@ -125,7 +132,7 @@ export default class CartStore extends VuexModule {
           itemInfo: [...cartItems]
         })
         .then(() => {
-          this.deleteItemFromCartMut(deleteItemIndex)
+          this.deleteItemFromCartMut(cartItems)
         })
     }
   }
@@ -181,5 +188,17 @@ export default class CartStore extends VuexModule {
   //ログアウト時にstore情報をリセットする
   public clearOrderInfoAct(): void {
     this.clearOrderInfoMut()
+  }
+
+  @Action({ rawError: true })
+  public cancelOrderItemsAct(orderId: string) {
+    if (UserStore.uid) {
+      db.collection(`users/${UserStore.uid}/orders`)
+        .doc(orderId)
+        .update({ status: 2 })
+        .then(() => {
+          this.cancelOrderItemsMut(orderId)
+        })
+    }
   }
 }

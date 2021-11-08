@@ -2,17 +2,17 @@
   <div class="py-2">
     <div class="text-center"><h2>商品詳細</h2></div>
     <div
-      class="bg-white m-3 mx-auto rounded-md sm:flex justify-center w-96 md:w-3/5 sm:w-4/5"
+      class="bg-white m-3 mx-auto rounded-md sm:flex justify-center w-96 sm:w-4/5"
     >
-      <div class="p-3">
+      <div class="p-3 sm:w-1/2">
         <img class="pb-3" :src="url" />
         <div class="flex justify-between">
-          <img class="w-28 sm:w-24" :src="item.img1" @click="changeImage1" />
-          <img class="w-28 sm:w-24" :src="item.img2" @click="changeImage2" />
-          <img class="w-28 sm:w-24" :src="item.img3" @click="changeImage3" />
+          <img class=" w-2/6" :src="item.img1" @click="changeImage1" />
+          <img class="pl-0.5 w-2/6" :src="item.img2" @click="changeImage2" />
+          <img class="pl-0.5 w-2/6" :src="item.img3" @click="changeImage3" />
         </div>
       </div>
-      <div class="p-3">
+      <div class="p-3 sm:w-1/2">
         <div class="border-dashed border-b border-light-blue-500 mb-3">
           <p class="text-2xl py-2">{{ item.itemName }}</p>
           <p class="text-right text-xl py-2">
@@ -34,7 +34,7 @@
             >+</span
           >
           <button
-            class="py-2 px-10 ml-2.5 bg-yellow-500 rounded-md text-white"
+            class="py-2 px-6 ml-2.5 bg-yellow-500 rounded-md text-white"
             @click="addItemToCart"
           >
             カートに追加する

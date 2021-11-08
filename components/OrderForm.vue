@@ -177,8 +177,6 @@
 <script lang="ts">
 import Vue from "vue";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
-import { auth } from "../plugins/firebase";
-import { userInfoType } from "../types/userInfoTypes";
 import { CartStore, UserStore } from "../store/index";
 
 type DataType = {
@@ -192,6 +190,7 @@ type DataType = {
   deliveryTime: string;
   payment: number;
   creditCardNum: string;
+  totalPrice: number;
   selectPayment: boolean;
   options: Array<{ [field: string]: any }>;
 };
@@ -222,6 +221,7 @@ export default Vue.extend({
       deliveryTime: "",
       payment: 0,
       creditCardNum: "",
+      totalPrice: 0,
       selectPayment: false,
       options: [
         { label: "10時", value: "10" },
@@ -243,8 +243,17 @@ export default Vue.extend({
       let da = ("0" + now.getDate()).slice(-2);
       this.orderDate = ye + "年" + mo + "月" + da + "日";
     },
+    priceSum() {
+      let totalPrice = 0;
+      let cartItems = CartStore.cartItems.itemInfo;
+      cartItems.forEach((item: any) => {
+        totalPrice += item.itemNum * item.itemPrice;
+      });
+      this.totalPrice = totalPrice + totalPrice * 0.1;
+    },
     orderSubmit() {
       this.setNowTime();
+      this.priceSum();
       let order = CartStore.cartItems;
       order.name = this.name;
       order.email = this.email;
@@ -252,8 +261,10 @@ export default Vue.extend({
       order.address = this.address;
       order.tel = this.tel;
       order.orderDate = this.orderDate;
+      order.totalPrice = this.totalPrice;
       order.deliveryDate = this.deliveryDate;
       order.status = 1;
+      //一度ログアウトしているのでorderIDがからで追加されない
       console.log(CartStore.orderId);
       CartStore.orderConfirm(order);
       this.$router.push("/OrderComp");
